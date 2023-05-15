@@ -14,11 +14,14 @@ class BookCache:
         with self.lock:
             if book_id in self.cache:
                 self.access_time[book_id] = time.time()
+                threading.Timer(
+                    self.default_ttl, self.remove_book, args=(book_id, self.access_time[book_id])
+                ).start()
                 return self.cache[book_id]
             else:
                 return None
 
-    def add_book(self, book_id, book, ttl=None):
+    def add_book(self, book_id, book):
         with self.lock:
             if book_id in self.cache:
                 self.access_time[book_id] = time.time()
@@ -30,9 +33,8 @@ class BookCache:
                 self.cache[book_id] = book
                 self.access_time[book_id] = time.time()
 
-        if ttl is not None:
             threading.Timer(
-                ttl, self.remove_book, args=(book_id, self.access_time[book_id])
+                self.default_ttl, self.remove_book, args=(book_id, self.access_time[book_id])
             ).start()
 
     def remove_book(self, book_id: int, periodic_delete_time: float = None):
@@ -51,12 +53,3 @@ class BookCache:
         with self.lock:
             self.cache.clear()
             self.access_time.clear()
-
-    def evict_old_books(self):
-        with self.lock:
-            now = time.time()
-            for book_id, access_time in self.access_time.items():
-                book_ttl = self.cache.get(book_id, {}).get('ttl', self.default_ttl)
-                if now - access_time > book_ttl:
-                    del self.cache[book_id]
-                    del self.access_time[book_id]
