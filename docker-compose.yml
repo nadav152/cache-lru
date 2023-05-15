@@ -1,0 +1,46 @@
+version: "3.10"
+
+services:
+    web:
+        build: .
+        links:
+            - "db:database"
+        ports:
+            - "8000:8000"
+        depends_on:
+            db: 
+                condition: service_healthy 
+        command: >
+            sh -c "python manage.py makemigrations &&
+            python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8000"
+        networks:
+            - caching
+        environment:  
+            - SQL_DATABASE_NAME=cache-lru 
+            - SQL_USER=postgres
+            - SQL_PASSWORD=test4Life!
+            - SQL_HOST=db
+            - PORT=5432
+    
+    db:
+        image: postgres
+        restart: always 
+        environment:  
+            - POSTGRES_DB=cache-lru 
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=test4Life!
+        ports:
+            - "5432:5432"
+        volumes:
+            - pg_data:/var/lib/postgresql   # persist Postgres data to the docker volume 'pg_data'
+        networks:
+            - caching
+        healthcheck:
+            test: "exit 0"
+
+volumes:
+    pg_data:
+networks:
+    caching:
+      name: caching-network
