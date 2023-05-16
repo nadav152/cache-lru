@@ -13,11 +13,11 @@ This project is a Django backend app. In this app I demonstrate a LRU-cache buil
 
     * HTTPS
     ``` sh
-    git clone 
+    git clone https://github.com/nadav152/cache-lru.git
     ```
     * SSH
    ``` sh
-   git clone 
+   git clone git@github.com:nadav152/cache-lru.git
    ```
 
 2. Make sure you have docker & docker-compose installed. 
