@@ -76,6 +76,43 @@ WSGI_APPLICATION = 'cache_lru.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(pathname)s:%(funcName)s:%(lineno)d %(process)d %(thread)d '
+            '%(message)s'
+        },
+        'simple': {'format': '%(levelname)s %(asctime)s: %(message)s'},
+    },
+    'handlers': {
+        'console': {
+            'level': os.getenv("LOG_LEVEL", "INFO"),
+            'class': 'logging.StreamHandler',
+            'formatter': os.getenv("LOG_FORMATTER", "simple"),
+        },
+    },
+    'loggers': {
+        'app_log.console': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'WARN',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

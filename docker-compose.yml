@@ -21,7 +21,7 @@ services:
             - SQL_USER=postgres
             - SQL_PASSWORD=test4Life!
             - SQL_HOST=db
-            - PORT=5432
+            - SQL_PORT=5432
     
     db:
         image: postgres
@@ -33,7 +33,7 @@ services:
         ports:
             - "5432:5432"
         volumes:
-            - pg_data:/var/lib/postgresql   # persist Postgres data to the docker volume 'pg_data'
+            - pg_data:/var/lib/postgresql   
         networks:
             - caching
         healthcheck:
