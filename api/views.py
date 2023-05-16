@@ -6,10 +6,11 @@ from django.http import HttpResponseNotFound
 from api.models import Book
 from api.cache import BookCache
 from typing import Union
+from api.constants import LOGGER, BOOK_DELETED, CREATED_BOOK
 import logging
 
 book_cache = BookCache(size=3, default_ttl=60)
-logger = logging.getLogger('app_log.console')
+logger = logging.getLogger(LOGGER)
 
 
 class BookViewSet(APIView):
@@ -18,7 +19,7 @@ class BookViewSet(APIView):
             serializer = BookSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                logger.info(f"[CREATE BOOK] Book created successfully")
+                logger.info(CREATED_BOOK)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -46,10 +47,9 @@ class BookViewSet(APIView):
     def delete(self, request, pk):
         try:
             book = self.get_book(pk)
-
             book_cache.remove_book(pk)
             book.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(BOOK_DELETED, status=status.HTTP_204_NO_CONTENT)
 
         except Book.DoesNotExist as err:
             self.log_failed_get_book(pk, err)
