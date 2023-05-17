@@ -68,17 +68,17 @@ class CacheTesting(TestCase):  # django is creating new DB
         book_cache.set_object(object_id=books[2].id, model_object=books[2])
 
         # latest in cache should be the first book
-        oldest_book_id = book_cache.cache_liked_list.get_head().value.id
+        oldest_book_id = book_cache.cache_linked_list.get_head().value.id
         self.assertEqual(oldest_book_id, books[0].id)
 
         # latest in cache should be the second book
         book_cache.set_object(object_id=books[3].id, model_object=books[3])
-        oldest_book_id = book_cache.cache_liked_list.get_head().value.id
+        oldest_book_id = book_cache.cache_linked_list.get_head().value.id
         self.assertEqual(oldest_book_id, books[1].id)
 
         # latest in cache should be the third book
         book_cache.set_object(object_id=books[4].id, model_object=books[4])
-        oldest_book_id = book_cache.cache_liked_list.get_head().value.id
+        oldest_book_id = book_cache.cache_linked_list.get_head().value.id
         self.assertEqual(oldest_book_id, books[2].id)
 
     def test_concurrent_access(self):
